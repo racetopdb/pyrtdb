@@ -2,10 +2,10 @@
 
 ----
 
-## Project Directory
+## Start
 > {ProjectDirPath}是Python客户端连接器的项目根目录
 
-## Fetaures
+## Features
 * 支持DB API 2.0(PEP 249)，详情可见resources/DB API 2.0
 * 使用c扩展，内部使用标准库ctypes(Python外部函数库)来调用c语言动态链接库的函数
 * 调用的C语言动态链接库libtsdb.so(或者tsdb.dll)是rtdb数据库官方对外的纯c语言接口动态链接库，rtdbcli的python连接器通过
@@ -49,6 +49,10 @@ import sys
 from pathlib import Path
 
 # 必须确保{ProjectDirPath}/rtdbcli的路径已经配置到系统路径，否则会抛出异常ModuleNotFoundError
+import sys
+from pathlib import Path
+
+# 必须确保{ProjectDir}/rtdbcli的路径已经配置到系统路径，否则会抛出异常ModuleNotFoundError
 try:
     import pyrtdb
 except ModuleNotFoundError:
@@ -58,20 +62,37 @@ except ModuleNotFoundError:
     import pyrtdb
 
 DB = pyrtdb.connect(pyrtdb.RTDB_HOST, pyrtdb.RTDB_PORT,
-                     pyrtdb.RTDB_USER_NAME, pyrtdb.RTDB_PASSWORD)
+                    pyrtdb.RTDB_USER_NAME, pyrtdb.RTDB_PASSWORD, charset=pyrtdb.CHARSET_UTF8)
 
 with DB:
     with DB.cursor() as cursor:
-        cursor.execute("create database test_db if not exists;")
+        cursor.execute("create database 'test_db' if not exists;")
         cursor.execute("use test_db;")
         cursor.execute(
-            "create table users if not exists users(id bigint, email varchar(255), password varchar(255));")
+            "create table if not exists users(id int, email varchar(254), password varchar(254));")
+        cursor.execute("insert into users(id, email, password) values(1, 'uzi@sina.com', '123456');")
+
     with DB.cursor() as cursor:
         sql = "select last * from users;"
         cursor.execute(sql)
         # 获取一条记录
         result = cursor.fetchone()
         print(result)
+```
+代码输出结果, 设置{ProjectDirPath}/pyrtdb/constant.py中的DEBUG_PRINT_SQL=True可以打印出正在执行的
+所有sql，如下图所示。
+```shell
+[DEBUG] 2022-02-24 16:21:07,726 Rtdb <MainProcess,MainThread> cursor@81: create database 'test_db' if not exists;
+charset in: utf-8
+[DEBUG] 2022-02-24 16:21:07,727 Rtdb <MainProcess,MainThread> cursor@81: use test_db;
+charset in: utf-8
+[DEBUG] 2022-02-24 16:21:07,728 Rtdb <MainProcess,MainThread> cursor@81: create table if not exists users(id int, email varchar(254), password varchar(254));
+charset in: utf-8
+[DEBUG] 2022-02-24 16:21:07,729 Rtdb <MainProcess,MainThread> cursor@81: insert into users(id, email, password) values(1, 'uzi@sina.com', '123456');
+charset in: utf-8
+[DEBUG] 2022-02-24 16:21:07,730 Rtdb <MainProcess,MainThread> cursor@81: select last * from users;
+charset in: utf-8
+(datetime.datetime(2022, 2, 24, 16, 21, 7, 729000), 1, 'uzi@sina.com', '123456')
 ```
 
 
@@ -85,7 +106,7 @@ connect是一个用于创建数据库连接的构造函数。该函数返回一�
     * password 用户密码，必填
     * timeout(可选, 通过kwargs传递) 连接超时时间，默认值为30
     * charset(可选) 表示数据库编码，数据库编码的默认值是CHARSET_WIN1
-        选项位于rtdbcli.constant.py
+        选项位于{ProjectDirPath}/pyrtdb/constant.py
         * CHARSET_UNKNOWN
         * CHARSET_GBK
         * CHARSET_UTF8
@@ -118,19 +139,19 @@ connect是一个用于创建数据库连接的构造函数。该函数返回一�
     * format ANSI C printf代码风格
     * pyformat Python的扩展格式化风格
     ```python
-    // qmark
+    # qmark
     CURSOR.execute("select * from students where name = ?", ("Michael", ))
     
-    // numeric
+    # numeric
     CURSOR.execute("select * from students where name = :1", ("Michael", ))
     
-    // named
+    # named
     CURSOR.execute("select * from students where name = :name", {'name': 'Michael'})
     
-    // format
+    # format
     CURSOR.execute("select * from students where name = %s", ("Michael", ))
     
-    // pyformat
+    # pyformat
     CURSOR.execute("select * from students where name = %(name)s", ("Michael", ))
     CURSOR.execute("select * from students where name = %(name)s", {'name': 'Michael'})
     ```
