@@ -1,0 +1,8 @@
+__title__ = 'pyrtdb'
+__description__ = 'Python connector for rtdb'
+__url__ = ''
+__version__ = '0.0.1.dev3'
+__author__ = 'Patrick'
+__author_email__ = 'pengzhao@rtdb.com'
+__license__ = 'GNU Lesser General Public License v3 (LGPLv3)'
+__copyright__ = 'Copyright 2021 Patrick'
