@@ -1,3 +1,4 @@
+from .rtdb_pool import rtdb_pool
 from .time import (
     Date,
     Time,
@@ -9,7 +10,8 @@ from .time import (
     TimeFromTicks,
     TimestampFromTicks
 )
-from .datastructure import DataType
+
+# from .datastructure import DataType
 from .constant import (
     CHARSET_UNKNOWN,
     CHARSET_GBK,
@@ -47,14 +49,10 @@ apilevel = "2.0"
 paramstyle = "format"
 
 
-def connect(host: str, port: int, user: str, password: str, **kwargs):
-    from pyrtdb.connection import Connection
-
-    return Connection(host, port, user, password, **kwargs)
 
 
-Connection = connect
-
+def NewPool(host: str, port: int, user: str, password: str,**kwargs):
+    return rtdb_pool(host,port,user,password,**kwargs)
 
 class TypeSet(frozenset):
     def __eq__(self, __o: object) -> bool:
@@ -63,18 +61,15 @@ class TypeSet(frozenset):
         return __o in self
 
 
-Binary = TypeSet([DataType.Binary.value])
-STRING = TypeSet([DataType.String.value])
-NUMBER = TypeSet([DataType.Int.value, DataType.Int64.value,
-                 DataType.Float.value, DataType.Double.value])
-DATETIME = TypeSet([DataType.Timestamp.value])
-ROWID = TypeSet([DataType.Int64.value])
+# Binary = TypeSet([DataType.Binary.value])
+# STRING = TypeSet([DataType.String.value])
+# NUMBER = TypeSet([DataType.Int.value, DataType.Int64.value,
+#                 DataType.Float.value, DataType.Double.value])
+# DATETIME = TypeSet([DataType.Timestamp.value])
+# ROWID = TypeSet([DataType.Int64.value])
 
 
 __all__ = [
-    "connect",
-    "Connection",
-
     "Date",
     "Time",
     "TimeDelta",
@@ -94,12 +89,6 @@ __all__ = [
     "DataError",
     "NotSupportedError",
     "InvalidArgs",
-
-    "Binary",
-    "STRING",
-    "NUMBER",
-    "DATETIME",
-    "ROWID",
 
     "RTDB_USER_NAME",
     "RTDB_HOST",

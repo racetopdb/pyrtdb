@@ -3,8 +3,8 @@ from pathlib import Path
 
 # Default config
 RTDB_USER_NAME = "test"
-RTDB_HOST = "127.0.0.1"
-RTDB_PORT = 9000
+RTDB_HOST = "192.168.1.43"
+RTDB_PORT = 1234
 RTDB_PASSWORD = "test"
 DEBUG_PRINT_SQL = True
 
