@@ -1,6 +1,10 @@
 from ctypes import c_void_p
-from . import rtdb_pool
+from typing import Union, Tuple, Dict
+
+from . import rtdb_pool, ProgrammingError, DataError
 from .adaptor.rtdb_v3 import rtdb_v3
+from .constant import DEBUG_PRINT_SQL
+from .log import rlogger
 from .rtdb_reader import rtdb_reader
 
 
@@ -21,8 +25,17 @@ class rtdb(rtdb_v3):
             return None
         return rtdb_reader(self.pool(), c_reader)
 
-    def store_result(self) -> rtdb_reader:
+    def query(self, sql: str, charset: str = "", database: str = "") -> int:
+        return rtdb_v3.query(self,sql,charset,database);
+
+    def query_result(self) -> rtdb_reader:
         c_reader = rtdb_v3.store_result(self)
         if not c_reader:
             return None
         return rtdb_reader(self.pool(), c_reader)
+
+    def print_stdout(self) -> int:
+        return rtdb_v3.print_stdout(self, "")
+
+    def print_str(self) -> str:
+        return rtdb_v3.print_str(self, "")

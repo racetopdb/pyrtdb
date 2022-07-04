@@ -8,7 +8,7 @@ RTDB_LOGGER_FMT = '[%(levelname)s] %(asctime)s %(name)s <%(processName)s,%(threa
 LOGGER_singleton_LOCK = threading.Lock()
 
 
-def rtdb_logger_singleton(name=RTDB_LOGGER_NAME, level=RTDB_LOGGER_LEVEL) -> logging.Logger:
+def rlogger(name=RTDB_LOGGER_NAME, level=RTDB_LOGGER_LEVEL) -> logging.Logger:
     global RTDB_LOGGER
     if not RTDB_LOGGER:
         with LOGGER_singleton_LOCK:
@@ -25,5 +25,5 @@ def rtdb_logger_singleton(name=RTDB_LOGGER_NAME, level=RTDB_LOGGER_LEVEL) -> log
 
 
 if __name__ == "__main__":
-    rtdb_logger_singleton().info("hello world")
+    rlogger().info("hello world")
 

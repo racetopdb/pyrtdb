@@ -19,3 +19,19 @@ class rtdb_reader(rtdb_reader_v3):
         if not c_field:
             return None
         return rtdb_field(self.pool(),c_field)
+
+    # def print(self):
+
+
+    def string(self)->str:
+        # str = ""
+        # fc =  self.get_field_count()
+        # for i in range(fc):
+        #    str += ""
+        #    field = self.field_get(i)
+        # while 0 == self.cursor_next():
+        #    for i in range(fc):
+        #        field = self.field_get(i)
+        return ""
+
+

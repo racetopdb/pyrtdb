@@ -3,8 +3,8 @@ from pathlib import Path
 
 # Default config
 RTDB_USER_NAME = "test"
-RTDB_HOST = "192.168.1.43"
-RTDB_PORT = 1234
+RTDB_HOST = "127.0.0.1"
+RTDB_PORT = 9000
 RTDB_PASSWORD = "test"
 DEBUG_PRINT_SQL = True
 
@@ -77,6 +77,30 @@ class CharsetID(Enum):
     CHARSET_WIN1 = 10
     CHARSET_WIN2 = 11
 
+# Charset id
+@unique
+class RTDBDataType(Enum):
+    RTDBDataTypeUNKNOWN       = 0
+    # boolean. 1 byte
+    RTDBDataTypeBOOL          = 1
+    # int. 4 bytes
+    RTDBDataTypeINT           = 2
+    # int 64 bit. 8 bytes
+    RTDBDataTypeINT64         = 3
+    # float. 4 bytes
+    RTDBDataTypeFLOAT         = 4
+    # double. 8 bytes
+    RTDBDataTypeDOUBLE        = 5
+    # binary
+    RTDBDataTypeBINARY        = 6
+    # string
+    RTDBDataTypeSTRING        = 7
+    # datetime ms
+    RTDBDataTypeDATETIME_MS   = 8
+    # void *
+    RTDBDataTypePOINTER       = 9
+    # tag string
+    RTDBDataTypeTAG_STRING    = 10
 
 CHARSET_DICT = {
     CharsetID.CHARSET_UNKNOWN.value: CHARSET_UNKNOWN,

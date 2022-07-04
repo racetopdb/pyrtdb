@@ -37,7 +37,7 @@ class rtdb_reader_v3:
         return func(self._c_reader, str2c_char_p(sql))
 
     
-    def get_field_count(self, sql: str) -> int:
+    def get_field_count(self) -> int:
         func = self._libdll().tsdb_v3_reader_get_field_count
         func.argtypes = (ctypes.c_void_p,)
         func.restype = ctypes.c_int

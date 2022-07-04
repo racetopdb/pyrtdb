@@ -25,37 +25,71 @@ class rtdb_v3:
 
     
     def disconnect(self) -> int:
-        func = self._libdll().tsdb_v3_disconnect
+        func = self._libdll().tsdb_v3_disconnect_private
         func.argtypes = (ctypes.c_void_p,)
         func.restype = ctypes.c_int
         return func(self._c_tsdb)
 
     
     def get_user_name(self) -> str:
-        tsdb_user_name = self._libdll.tsdb_v3_get_user_name
-        tsdb_user_name.argtypes = (ctypes.c_void_p,)
-        tsdb_user_name.restype = ctypes.c_char_p
+        func = self._libdll().tsdb_v3_get_user_name
+        func.argtypes = (ctypes.c_void_p,)
+        func.restype = ctypes.c_char_p
 
-        result: bytes = tsdb_user_name(self._tsdb)
+        result: bytes = func(self._c_tsdb)
         return result.decode(encoding='utf-8')
 
     
     def get_server_addr(self) -> str:
-        tsdb_user_name = self._libdll.tsdb_v3_get_server_addr
-        tsdb_user_name.argtypes = (ctypes.c_void_p,)
-        tsdb_user_name.restype = ctypes.c_char_p
+        func = self._libdll().tsdb_v3_get_server_addr
+        func.argtypes = (ctypes.c_void_p,)
+        func.restype = ctypes.c_char_p
 
-        result: bytes = tsdb_user_name(self._tsdb)
+        result: bytes = func(self._c_tsdb)
         return result.decode(encoding='utf-8')
 
     
     def get_db_current(self) -> str:
-        tsdb_user_name = self._libdll.tsdb_v3_get_db_current
-        tsdb_user_name.argtypes = (ctypes.c_void_p,)
-        tsdb_user_name.restype = ctypes.c_char_p
+        func = self._libdll().tsdb_v3_get_db_current
+        func.argtypes = (ctypes.c_void_p,)
+        func.restype = ctypes.c_char_p
 
-        result: bytes = tsdb_user_name(self._tsdb)
+        result: bytes = func(self._c_tsdb)
         return result.decode(encoding='utf-8')
+    
+    def print_str(self, parameters: str) -> str:
+        """[summary] print current query result as string
+
+        Args:
+            parameters (str): just pass ""
+
+        Returns:
+            [str]: query result
+        """
+        func = self._libdll().tsdb_v3_print_str
+        func.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_void_p)
+        func.restype = ctypes.c_char_p
+        str_len = ctypes.c_int( 0 );
+        if parameters is None:
+            parameters = ""
+        result: bytes = func(self._c_tsdb, str2c_char_p(parameters), ctypes.byref(str_len));
+        return result.decode(encoding='utf-8')
+
+    def print_stdout(self, parameters: str) -> int:
+        """[summary] print current query result to stdout
+
+        Args:
+            parameters (str): just pass ""
+
+        Returns:
+            [int]: error number
+        """
+        func = self._libdll().tsdb_v3_print_stdout
+        func.argtypes = (ctypes.c_void_p, ctypes.c_char_p)
+        func.restype = ctypes.c_int
+        if parameters is None:
+            parameters = ""
+        return func(self._c_tsdb, str2c_char_p(parameters));
 
     # 
     def query(self, sql: str, charset: str = "", database: str = "") -> int:
@@ -110,7 +144,7 @@ class rtdb_v3:
         func = self._libdll().tsdb_v3_query_reader
         func.argtypes = (ctypes.c_void_p, ctypes.c_char_p,ctypes.c_char_p, ctypes.c_char_p,ctypes.c_bool,)
         func.restype = ctypes.c_void_p
-        print("charset in: {}".format(charsetin))
+        # print("charset in: {}".format(charsetin))
         #  TODO: 如果sql语句中包含中文，但是没有指定utf-8编码，使用默认的Latin-1编码应该会有问题, 等待服务器适配之后进行处理
         c_reader = func(self._c_tsdb,
                     str2c_char_p(sql),
@@ -127,7 +161,7 @@ class rtdb_v3:
         func = self._libdll().tsdb_v3_store_result
         func.argtypes = (ctypes.c_void_p,)
         func.restype = ctypes.c_void_p
-        c_reader = func(self._tsdb)
+        c_reader = func(self._c_tsdb)
         if not c_reader:
             return None
         return c_reader
@@ -137,4 +171,4 @@ class rtdb_v3:
         func = self._libdll().tsdb_v3_select_db
         func.argtypes = (ctypes.c_void_p,ctypes.c_char_p,)
         func.restype = ctypes.c_int
-        return func(self._tsdb,str2c_char_p(db_name))
+        return func(self._c_tsdb,str2c_char_p(db_name))

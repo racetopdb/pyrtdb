@@ -17,6 +17,7 @@ pool = pyrtdb.NewPool(pyrtdb.RTDB_HOST, pyrtdb.RTDB_PORT,
 def insert_data():
     db = pool.newDB()
     conn = db.newConn()
+    print(conn)
     if not conn:
         return
     conn.query("drop db 'test_db';")
@@ -44,10 +45,14 @@ def insert_data():
     reader = conn.query_reader("select * from users where time between '2020-01-02 00:00:00.000' and '2023-01-02 23:59:59.000';")
     if not reader:
         return
+    print(111)
     while 0 == reader.cursor_next():
+        print(db.print_str())
+        print(2222)
         id = reader.get_int(1)
         email = reader.get_string(2)
         password = reader.get_string(3)
         print("one row data",id,email,password)
 
+    db.print_stdout()
 insert_data()

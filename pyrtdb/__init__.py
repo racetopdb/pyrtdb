@@ -1,4 +1,3 @@
-from .rtdb_pool import rtdb_pool
 from .time import (
     Date,
     Time,
@@ -10,7 +9,6 @@ from .time import (
     TimeFromTicks,
     TimestampFromTicks
 )
-
 # from .datastructure import DataType
 from .constant import (
     CHARSET_UNKNOWN,
@@ -44,12 +42,12 @@ from .exception import (
     NotSupportedError,
     InvalidArgs
 )
+
+from .rtdb_pool import rtdb_pool
+
 threadsafety = 1
 apilevel = "2.0"
 paramstyle = "format"
-
-
-
 
 def NewPool(host: str, port: int, user: str, password: str,**kwargs):
     return rtdb_pool(host,port,user,password,**kwargs)
