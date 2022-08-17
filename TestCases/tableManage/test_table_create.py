@@ -1,9 +1,31 @@
 # -*- coding: utf-8 -*-
+from TestCases.tableManage.setupModule import *
 import unittest
-from TestCases.tableManage.setupClass import *
+from Comm.pyrtdb import conn
+from time import *
+import datetime
+from Conf.config import *
+from Lib.tableOpt import *
 
+db = 'test_tb_create' + datetime.datetime.now().strftime('%Y%m%d%H%M%S')
 
-class Test_tb_create(setupTb):
+class Test_tb_create(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+
+        res = conn.query("create db if not exists  " + db + ";")
+        cls().assertEqual(res, 0, msg='初始化创建数据库失败')
+        usql = 'use ' + db + ''
+        ret = createDB.createSql(None, usql)
+        cls().assertEqual( ret , 0, msg='初始化use数据库失败')
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+
+        # r = conn.query("drop db " + db + ";")
+        dropDb = createDB.dropDB(db)
+        cls().assertEqual(dropDb, 0, msg='删除初始化创建的数据库')
+
     def test_tb_004(self):
         '''
         使用create table 创建表 ,query ok
@@ -30,7 +52,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['isList'], [False, True, True, True, True, True, True, True], msg='验证是否空')
 
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop , None ,msg='tb_004删除创建的表')
+        self.assertEqual(drop , 0 ,msg='tb_004删除创建的表')
     def test_tb_005(self):
         '''
         if not exist在表名前面创建数据库 , query ok
@@ -56,7 +78,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['isList'], [False, True, True, True, True, True, True, True], msg='验证是否空')
 
         drop = tableOpt.dropTb('table2')
-        self.assertEqual(drop, None, msg='tb_005删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_005删除创建的表')
     def test_tb_006(self):
         '''
         if not exist在表名后面创建数据库 ,query ok
@@ -81,10 +103,10 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['isList'], [False, True, True, True, True, True, True, True], msg='验证是否空')
 
         drop = tableOpt.dropTb('table3')
-        self.assertEqual(drop, None, msg='tb_006删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_006删除创建的表')
     def test_tb_007(self):
         '''
-        if not exist 在最后创建语句创建数据库, query fail
+        if not exist在最后创建语句创建数据库, query fail
         '''
         csql = 'create table table4(f1 int,f2 bigint,f3 float,f4 bool,f5 double,f6 timestamp,f7 varchar(10)) if not exist '
         cRes = tableOpt.createTb(None,{},csql)
@@ -109,7 +131,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['isList'], [False, True, True], msg='验证是否空')
 
         drop = tableOpt.dropTb('table005')
-        self.assertEqual(drop, None, msg='tb_008删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_008删除创建的表')
     def test_tb_009(self):
         '''
         IFNOTEXIST大写在表名后面创建数据库 query ok
@@ -128,7 +150,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['isList'], [False, True, True], msg='验证是否空')
 
         drop = tableOpt.dropTb('table006')
-        self.assertEqual(drop, None, msg='tb_009删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_009删除创建的表')
     def test_tb_010(self):
         '''
         IFNOTEXIST大写在创建语句的最后创建数据库, query fail
@@ -138,7 +160,7 @@ class Test_tb_create(setupTb):
         self.assertTrue(cRes != 0 ,msg='tb_010创建表失败')
     def test_tb_011(self):
         '''
-        使用if not exist 创建一个已经存在的表,query ok ,但是字段是第一次创建的字段
+        使用if not exist创建一个已经存在的表,query ok
         '''
         tb = ' if not exist table011 '
         cRes1 = tableOpt.createTb(tb ,
@@ -167,7 +189,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['isList'], [False, True, True, True, True, True, True, True], msg='验证是否空')
 
         drop = tableOpt.dropTb('table011')
-        self.assertEqual(drop, None, msg='tb_011删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_011删除创建的表')
     def test_tb_012(self):
         '''
         大写表名,query ok
@@ -186,7 +208,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['isList'], [False, True, True], msg='验证是否空')
 
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop, None, msg='tb_012删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_012删除创建的表')
     def test_tb_013(self):
         '''
         小写表名,query ok
@@ -205,10 +227,10 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['isList'], [False, True, True], msg='验证是否空')
 
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop, None, msg='tb_013删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_013删除创建的表')
     def test_tb_014(self):
         '''
-        先创建一个大写的表名，再创建一个同名的小写的表名,query ok ,两个都成功,但是是第一次的表字段
+        先创建一个大写的表名再创建一个同名的小写的表名,query ok
         '''
         c1 = tableOpt.createTb('SSDB',
                                {
@@ -233,8 +255,8 @@ class Test_tb_create(setupTb):
                 self.assertEqual(v['field'], 3, msg='验证字段个数2')
         drop1 = tableOpt.dropTb('SSDB')
         drop2 = tableOpt.dropTb('ssdb')
-        self.assertEqual(drop1, None, msg='删除大写的数据表')
-        self.assertEqual(drop2, None, msg='删除小写的数据表')
+        self.assertEqual(drop1, 0, msg='删除大写的数据表')
+        self.assertEqual(drop2, 0, msg='删除小写的数据表')
 
     def test_tb_015(self):
         '''
@@ -267,11 +289,10 @@ class Test_tb_create(setupTb):
         self.assertEqual(show['name'] , '时序库' , msg= '验证名称')
         self.assertEqual(show['field'], 2, msg='验证字段数量')
         drop = tableOpt.dropTb('时序库')
-        self.assertEqual(drop , None ,msg='tb_017删除创建的表')
+        self.assertEqual(drop , 0 ,msg='tb_017删除创建的表')
     def test_tb_018(self):
         '''
         表名以特殊字符*开头 ,query fail
-        create table *test (col1 int ,col2 int)
         '''
         res = tableOpt.createTb('*test',{'f1':data_type['int']})
         self.assertTrue(res !=0 ,msg='表名以特殊字符开头，创建失败')
@@ -280,7 +301,6 @@ class Test_tb_create(setupTb):
     def test_tb_019(self):
         '''
         表名以中文状态下的！开头, query ok
-        这个用例在win上fail了，在64服务器上query ok了
         '''
         tb = '！test'
         cRes = tableOpt.createTb(tb,
@@ -293,7 +313,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(show['name'] , tb , msg='tb019验证名称')
         self.assertEqual(show['field'] , 3, msg='tb019验证字段数量')
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop , None ,msg='tb_019删除创建的表')
+        self.assertEqual(drop , 0 ,msg='tb_019删除创建的表')
     def test_tb_020(self):
         '''
         表名中间包含特殊字符，query fail
@@ -327,7 +347,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['isList'], [False, True, True], msg='验证是否空')
 
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop, None, msg='tb_021删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_021删除创建的表')
     def test_tb_022(self):
         '''
         关键字作为表名, query ok
@@ -345,7 +365,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['lens'], [8, 4, 8], msg='验证字段长度')
         self.assertEqual(desc['isList'], [False, True, True], msg='验证是否空')
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop, None, msg='tb_022删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_022删除创建的表')
     def test_tb_023(self):
         '''
         以【】在包括列和数据类型 创建表
@@ -404,7 +424,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['lens'], [8, 4, 4], msg='验证字段长度')
         self.assertEqual(desc['isList'], [False, True, True], msg='验证是否空')
         drop = tableOpt.dropTb('table_028')
-        self.assertEqual(drop, None, msg='tb_028删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_028删除创建的表')
     def test_tb_029(self):
         '''
         以（（））在包括列和数据类型 创建表,query fail
@@ -417,7 +437,6 @@ class Test_tb_create(setupTb):
     def test_tb_030(self):
         '''
         用空格分隔列与列
-        create table table_030 (c1 int c2 int c3 int)
         '''
         sql = 'create table table_030 (c1 int c2 int c3 int)'
         res = tableOpt.createTb(None,{},sql)
@@ -428,11 +447,10 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['lens'], [8, 4], msg='验证字段长度')
         self.assertEqual(desc['isList'], [False, True], msg='验证是否空')
         drop = tableOpt.dropTb('table_030')
-        self.assertEqual(drop, None, msg='tb_030删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_030删除创建的表')
     def test_tb_031(self):
         '''
         使用| 分隔列与列
-        create table table_011 (c1 int | c2 int | c3 int)
         '''
         sql = 'create table table_031 (c1 int | c2 int | c3 int)'
         res = tableOpt.createTb(None,{},sql)
@@ -443,11 +461,10 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['lens'], [8, 4], msg='验证字段长度')
         self.assertEqual(desc['isList'], [False, True], msg='验证是否空')
         drop = tableOpt.dropTb('table_031')
-        self.assertEqual(drop, None, msg='tb_031删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_031删除创建的表')
     def test_tb_032(self):
         '''
         使用中文逗号分隔,  win上失败了，服务器上是query ok的
-        create table table_032 (c1 int ， c2 int ，c3 int)
         '''
         sql = 'create table table_032 (c1 int ， c2 int ，c3 int)'
         res = tableOpt.createTb(None, {}, sql)
@@ -458,11 +475,10 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['lens'], [8, 4], msg='验证字段长度')
         self.assertEqual(desc['isList'], [False, True], msg='验证是否空')
         drop = tableOpt.dropTb('table_032')
-        self.assertEqual(drop, None, msg='tb_032删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_032删除创建的表')
     def test_tb_033(self):
         '''
         使用*分隔列与列, query ok
-        create table table_033 (c1 int * c2 int * c3 int)
         '''
         sql = 'create table table_033 (c1 int * c2 int * c3 int)'
         res = tableOpt.createTb(None, {}, sql)
@@ -473,11 +489,10 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['lens'], [8, 4], msg='验证字段长度')
         self.assertEqual(desc['isList'], [False, True], msg='验证是否空')
         drop = tableOpt.dropTb('table_033')
-        self.assertEqual(drop, None, msg='tb_033删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_033删除创建的表')
     def test_tb_034(self):
         '''
         使用英文逗号分隔
-
         '''
         sql = 'create table table_034 (c1 int , c2 int , c3 int)'
         res = tableOpt.createTb(None, {}, sql)
@@ -488,7 +503,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['lens'], [8, 4,4,4], msg='验证字段长度')
         self.assertEqual(desc['isList'], [False, True, True, True], msg='验证是否空')
         drop = tableOpt.dropTb('table_034')
-        self.assertEqual(drop, None, msg='tb_034删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_034删除创建的表')
     def test_tb_035(self):
         '''
         前面列使用空格分隔，最后一列加，
@@ -502,11 +517,10 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['lens'], [8, 4], msg='验证字段长度')
         self.assertEqual(desc['isList'], [False, True], msg='验证是否空')
         drop = tableOpt.dropTb('table_035')
-        self.assertEqual(drop, None, msg='tb_035删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_035删除创建的表')
     def test_tb_036(self):
         '''
         前面列使用空格，最后一列加中文）， query fail
-        create table table_036 (c1 int c2 int c3 int)）
         '''
         sql = 'create table table_036(c1 int c2 int c3 int)）'
         res = tableOpt.createTb(None, {}, sql)
@@ -516,7 +530,6 @@ class Test_tb_create(setupTb):
     def test_tb_037(self):
         '''
         列名称全英文字母
-        create table table_037(id int ,name char(50))
         '''
         tb = 'table_037'
         cRes = tableOpt.createTb(tb,
@@ -533,7 +546,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['isList'], [False, True, True], msg='验证是否空')
 
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop, None, msg='tb_037删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_037删除创建的表')
     def test_tb_038(self):
         '''
         列名称数字开头,query fail
@@ -555,7 +568,6 @@ class Test_tb_create(setupTb):
     def test_tb_040(self):
         '''
         列名称为汉字, 服务器上ok， win上fail
-        create table table_040(顺实科技 int ,数据库 int)
         '''
         tb = 'table_040'
         cRes = tableOpt.createTb(tb,
@@ -572,11 +584,10 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['isList'], [False, True, True], msg='验证是否空')
 
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop, None, msg='tb_040删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_040删除创建的表')
     def test_tb_041(self):
         '''
         列名称为汉字+数字组合 ,服务器上ok， win上fail
-        create table table_021 (顺实88 int ,科技99 int)
         '''
         tb = 'table_041'
         cRes = tableOpt.createTb(tb,
@@ -593,11 +604,10 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['isList'], [False, True, True], msg='验证是否空')
 
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop, None, msg='tb_041删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_041删除创建的表')
     def test_tb_042(self):
         '''
         列名称为英文+汉字组合，执行成功 query ok
-        create table table_042(test_顺实 int ,test_科技 int)
         '''
         tb = 'table_042'
         res = tableOpt.createTb(tb,
@@ -613,11 +623,10 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['isList'], [False, True, True], msg='验证是否空')
 
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop, None, msg='tb_042删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_042删除创建的表')
     def test_tb_043(self):
         '''
         列名称以特殊符号*开头，query fail
-        create table table_023(*co11 int ,*col2 int)
         '''
         tb = 'table_043'
         res = tableOpt.createTb(tb,
@@ -667,7 +676,6 @@ class Test_tb_create(setupTb):
     def test_tb_048(self):
         '''
         列名称以汉字开头+数字组合，query ok
-        create table table_048(顺实_88 int )
         '''
         tb = 'table_048'
         res = tableOpt.createTb(tb,
@@ -681,7 +689,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['lens'], [8, 4], msg='验证字段长度')
         self.assertEqual(desc['isList'], [False, True], msg='验证是否空')
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop, None, msg='tb_048删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_048删除创建的表')
     def test_tb_049(self):
         '''
         列名称使用关键字：as  create等，query ok,但是 null 会失败
@@ -699,10 +707,10 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['lens'], [8, 4,4], msg='验证字段长度')
         self.assertEqual(desc['isList'], [False, True, True], msg='验证是否空')
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop, None, msg='tb_049删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_049删除创建的表')
     def test_tb_050(self):
         '''
-        字段名称中英文混合  ， 不指定类型 ，指定长度, query fail
+        字段名称中英文混合 ，不指定类型 ，指定长度, query fail
         '''
         sql = 'create table table_050(test顺实 (10))'
         res = tableOpt.createTb(None, {}, sql)
@@ -712,7 +720,6 @@ class Test_tb_create(setupTb):
     def test_tb_051(self):
         '''
         中英文混合 ，不指定数据类型，不指定长度, query fail
-        create table table_031(顺实 , id  )
         '''
         sql = 'create table table_051(顺实 , id  )'
         res = tableOpt.createTb(None, {}, sql)
@@ -741,7 +748,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['lens'], [8,4,8,50,8,4,4,1], msg='验证字段长度')
         self.assertEqual(desc['isList'], [False, True, True, True, True, True, True, True], msg='验证是否空')
         drop = tableOpt.dropTb('test_053')
-        self.assertEqual(drop, None, msg='tb_053删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_053删除创建的表')
     def test_tb_054(self):
         '''
         中英文混合，指定类型 ，int float等指定长度, query ok
@@ -764,7 +771,7 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['lens'], [8, 4, 8, 10, 8, 4, 4, 1], msg='验证字段长度')
         self.assertEqual(desc['isList'], [False, True, True, True, True, True, True, True], msg='验证是否空')
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop, None, msg='tb_054删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_054删除创建的表')
     def test_tb_055(self):
         '''
         全中文字段 ，不指定类型和长度,query failed
@@ -786,7 +793,6 @@ class Test_tb_create(setupTb):
     def test_tb_057(self):
         '''
         全中文字段，指定类型，指定长度query ok
-        create table table_036 ('顺实' int , '科技' varchar(10), '公司' char(20))
         '''
         tb = 'table_057'
         res = tableOpt.createTb(tb ,
@@ -802,11 +808,10 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['lens'], [8, 4, 8, 20], msg='验证字段长度')
         self.assertEqual(desc['isList'], [False, True, True, True], msg='验证是否空')
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop, None, msg='tb_057删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_057删除创建的表')
     def test_tb_058(self):
         '''
         全中文字段,指定类型，不指定长度(不包含varchar类型),query ok
-        create table table_038 ('顺实' int ,'科技' bigint,'公司' float)
         '''
         tb = 'table_058'
         res = tableOpt.createTb(tb,
@@ -822,11 +827,10 @@ class Test_tb_create(setupTb):
         self.assertEqual(desc['lens'], [8, 4, 8, 4], msg='验证字段长度')
         self.assertEqual(desc['isList'], [False, True, True, True], msg='验证是否空')
         drop = tableOpt.dropTb(tb)
-        self.assertEqual(drop, None, msg='tb_058删除创建的表')
+        self.assertEqual(drop, 0, msg='tb_058删除创建的表')
     def test_tb_059(self):
         '''
         全中文字段 ，指定类型， 不指定长度(包含varchar类型）query failed
-        create table table_059 ('顺实' int ,'科技' bigint,'公司' float,'数据库' varchar)
         '''
         tb = 'table_059'
         res = tableOpt.createTb(tb,

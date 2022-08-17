@@ -15,7 +15,7 @@ class Test_db_drop(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'],dbName,msg='验证创建的库和查询到的库是否一致')
         dRes = createDB.dropDB(dbName)
-        self.assertEqual(dRes , None ,msg='删除创建的数据库db_060')
+        self.assertEqual(dRes , 0 ,msg='删除创建的数据库db_060')
         row = createDB.rowNum()
         self.assertEqual(row ,0 ,msg='db_060删除完之后，剩下0行')
     def test_db_061(self):
@@ -36,7 +36,7 @@ class Test_db_drop(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], dbName, msg='验证创建的库和查询到的库是否一致')
         dRes = createDB.dropDB(dbName)
-        self.assertEqual(dRes, None, msg='删除创建的数据库db_062')
+        self.assertEqual(dRes, 0, msg='删除创建的数据库db_062')
         row = createDB.rowNum()
         self.assertEqual(row, 0, msg='db_062删除完之后，剩下0行')
         dRes2 = createDB.dropDB(dbName)
@@ -83,7 +83,7 @@ class Test_db_drop(unittest.TestCase):
         dRes = createDB.dropDB('"E:/JunXia_test/testdb067"')
         self.assertTrue(dRes != 0, msg='带路径，删除失败')
         dRes2 = createDB.dropDB('testdb067')
-        self.assertTrue(dRes2 == None, msg='删除创建的数据库')
+        self.assertTrue(dRes2 == 0, msg='删除创建的数据库')
 
     @unittest.skipIf(platform['system'] == 'Windows', 'windows平台跳过此用例')
     def test_db_068(self):
@@ -98,4 +98,4 @@ class Test_db_drop(unittest.TestCase):
         dRes = createDB.dropDB('"/junxiatest/testdb068"')
         self.assertTrue(dRes != 0, msg='带路径，删除失败')
         dRes2 = createDB.dropDB('testdb068')
-        self.assertTrue(dRes2 == None, msg='删除创建的数据库')
+        self.assertTrue(dRes2 == 0, msg='删除创建的数据库')

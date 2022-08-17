@@ -1,0 +1,3 @@
+rtdb -enable_sql_file false -dummy false -enable_random false -insert_count_1_query 1500 -thread 1 -table_count 1
+-field_count 7 -db DB_TEST_SCRIPT_300 -enable_detail false -COLUMN_RT_BUCKET_COUNT 40 -ROW_RT_BUCKET_COUNT 40
+-HISTORY_BUCKET_COUNT 40 -prepared false -cmd test_write_template_benchmark  -table_lead 'T_' -field_lead 'F_' -step_ms 100 -sleep_ms 0 -line_count 50 -MEMORY_TABLE_KEEP_LINE 1 /start_time "2022-01-01 00:00:00.000"

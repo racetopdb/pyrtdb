@@ -1,11 +1,12 @@
 import os
 import platform
-
-
 from configparser import ConfigParser
-# 使用相对目录确定文件位置
+import pyrtdb
+
 _conf_dir = os.path.dirname(__file__)
 _conf_file = os.path.join(_conf_dir, 'config.ini')
+
+testDataPath = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..\\TestData"))
 
 # 继承ConfigParser，写一个将结果转为dict的方法
 class MyParser(ConfigParser):
@@ -26,7 +27,12 @@ def _get_all_conf():
         except OSError:
             raise ValueError("Read config file failed: %s" % OSError)
     #为了方便使用platform ,这里向字段里面加入platfrom
-    result['platform'] = {'system':platform.system()}
+    if pyrtdb.RTDB_HOST =='192.168.110.64':
+        result['platform'] = {'system':'Linux'}
+    else:
+        result['platform'] = {'system': platform.system()}
+    result['testDataPath'] = testDataPath
+
     return result
 
 # 将各配置读取出来，放在变量中，后续其它文件直接引用这个这些变量

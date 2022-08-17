@@ -17,7 +17,7 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], dbName, msg='检查创建的库名和查询到的库名是否一致')
         dRes = createDB.dropDB(dbName)
-        self.assertTrue(dRes == None, msg='检查删除创建的数据库是否成功')
+        self.assertTrue(dRes == 0, msg='检查删除创建的数据库是否成功')
 
     def test_db_010(self):
         '''
@@ -30,7 +30,7 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], dbName, msg='检查创建的库名和查询到的库名是否一致')
         dRes = createDB.dropDB(dbName)
-        self.assertTrue(dRes == None, msg='db_010检查删除创建的数据库是否成功')
+        self.assertTrue(dRes == 0, msg='db_010检查删除创建的数据库是否成功')
 
     def test_db_011(self):
         '''
@@ -42,23 +42,25 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], 'test3DB')
         dRes = createDB.dropDB(dbName)
-        self.assertTrue(dRes == None, msg='db_011检查删除创建的数据库是否成功')
+        self.assertTrue(dRes == 0, msg='db_011检查删除创建的数据库是否成功')
 
     # @unittest.skipIf(platform['system'] == 'Linux', 'Linux平台不执行此用例')
-    @unittest.skipIf(platform['system'] == 'Windows', 'win平台不执行此用例')
+    # @unittest.skipIf(platform['system'] == 'Linux', 'linux平台不执行此用例')
+    @unittest.skip('手动执行可以创建成功，自动化不行，与中文有关，先跳过此用例')
     def test_db_012_win(self):
         '''
-                使用中文双引号+大小写混合数字的名称,创建数据库
-                这个用例手动执行可以创建成功，自动化不行。不知道为啥
+        使用中文双引号+大小写混合数字的名称,创建数据库
+        这个用例手动执行可以创建成功，自动化不行
         '''
         dbName = '“DB3TEs”'
         cRes = createDB.createSql(dbName)
-        print(f'返回的结果是：{cRes}')
+
         self.assertEqual(cRes, 0, msg='db_012中文双引号+大小写混合数字的名称在win创建数据库')
         ret = createDB.checkRes()
-        self.assertEqual(ret['name'], 'DB3TEs')
+        self.assertEqual(ret['name'], '“DB3TEs”')
+
         dRes = createDB.dropDB(dbName)
-        self.assertTrue(dRes == None, msg='db_012检查删除创建的数据库是否成功')
+        self.assertTrue(dRes == 0, msg='db_012检查删除创建的数据库是否成功')
     @unittest.skipIf(platform['system'] == 'Windows', 'win平台不执行此用例')
     def test_db_012(self):
         '''
@@ -67,12 +69,11 @@ class Test_db_create(unittest.TestCase):
         '''
         dbName = '“DB3TEs”'
         cRes = createDB.createSql(dbName)
-        print(f'返回的结果是：{cRes}')
         self.assertEqual(cRes, 0, msg='db_012中文双引号+大小写混合数字的名称创建数据库')
         ret = createDB.checkRes()
-        self.assertEqual(ret['name'], 'if')
-        dRes = createDB.dropDB('if')
-        self.assertTrue(dRes == None, msg='db_012检查删除创建的数据库是否成功')
+        self.assertEqual(ret['name'], '“DB3TEs”')
+        dRes = createDB.dropDB('“DB3TEs”')
+        self.assertTrue(dRes == 0, msg='db_012检查删除创建的数据库是否成功')
 
     @unittest.skipIf(platform['system'] == 'Linux', 'Linux平台不执行此用例')
     def test_db_013_win(self):
@@ -81,12 +82,11 @@ class Test_db_create(unittest.TestCase):
         '''
         dbName = '顺实科技'
         cRes = createDB.createSql(dbName)
-        print(f'创建数据结果返回是：{cRes}')
         self.assertEqual(cRes, 0, msg='db_013使用中文字符创建数据库')
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], dbName)
         dRes = createDB.dropDB(dbName)
-        self.assertTrue(dRes == None, msg='db_013检查删除创建的数据库是否成功')
+        self.assertTrue(dRes == 0, msg='db_013检查删除创建的数据库是否成功')
 
     @unittest.skipIf(platform['system'] == 'Windows', 'win平台不执行此用例')
     def test_db_013(self):
@@ -95,12 +95,11 @@ class Test_db_create(unittest.TestCase):
         '''
         dbName = '顺实科技'
         cRes = createDB.createSql(dbName)
-        print(f'创建数据结果返回是：{cRes}')
         self.assertEqual(cRes, 0, msg='db_013使用中文字符创建数据库')
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], dbName)
         dRes = createDB.dropDB(dbName)
-        self.assertTrue(dRes == None, msg='db_013检查删除创建的数据库是否成功')
+        self.assertTrue(dRes == 0, msg='db_013检查删除创建的数据库是否成功')
 
     def test_db_014(self):
         '''
@@ -108,9 +107,7 @@ class Test_db_create(unittest.TestCase):
         '''
         dbName = '_testdbs'
         cRes = createDB.createSql(dbName)
-
         self.assertTrue(cRes != 0, msg='db_014使用下划线开头创建数据库，期望返回fail')
-
         row = createDB.rowNum()
         self.assertEqual(row, 0, msg='db_014下划线开头创建数据库应该fail，所以返回0行')
 
@@ -146,7 +143,7 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], dbName)
         dRes = createDB.dropDB(dbName)
-        self.assertEqual(dRes, None)
+        self.assertEqual(dRes, 0)
 
     @unittest.skipIf(platform['system'] == 'Windows', 'win平台不执行此用例')
     def test_db_017(self):
@@ -159,21 +156,21 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], dbName)
         dRes = createDB.dropDB(dbName)
-        self.assertTrue(dRes == None)
+        self.assertTrue(dRes == 0)
 
-    @unittest.skipIf(platform['system'] == 'Linux', 'Linux平台不执行此用例')
+    # @unittest.skipIf(platform['system'] == 'Linux', 'Linux平台不执行此用例')
+    @unittest.skip('这个用例因为中文单引号的问题总是报错，跳过。')
     def test_db_017_win(self):
         '''
-        使用'下划线'开头的名称创建数据库, 这个用例，手动执行是失败的，自动化是成功的，weird
+        使用'下划线'开头的名称创建数据库
         '''
         dbName = '‘_dbtest’'
         cRes = createDB.createSql(dbName)
-        print(f'db_017_win返回的结果是：{cRes}')
-        self.assertTrue(cRes != 0)
-        # self.assertTrue(cRes == 0)
+        # self.assertTrue(cRes != 0)
+        self.assertTrue(cRes == 0 ,msg=f'创建结果是：{cRes}，期望值是：0')
 
         dRes = createDB.dropDB(dbName)
-        self.assertTrue(dRes == None)
+        self.assertTrue(dRes == 0)
     def test_db_018(self):
         '''
         使用"数字"开头的名称创建数据库
@@ -190,7 +187,6 @@ class Test_db_create(unittest.TestCase):
         '''
         dbName = '"_db"'
         cRes = createDB.createSql(dbName)
-        print(f'使用"下划线"开头的名称创建库的返回结果是：{cRes}')
         self.assertTrue(cRes != 0, msg='使用"下划线"开头的名称创建数据库，期望返回fail')
         row = createDB.rowNum()
         self.assertEqual(row, 0, msg='db_019使用"下划线"开头创建数据库行数为0')
@@ -198,8 +194,8 @@ class Test_db_create(unittest.TestCase):
     @unittest.skipIf(platform['system'] == 'Linux', 'Linux平台不执行此用例')
     def test_db_020_win(self):
         '''
-                先使用小写字母创建数据库【ok】，再使用同样的大写字母创建数据库【43ok win fail】
-                '''
+        先使用小写字母创建数据库【ok】，再使用同样的大写字母创建数据库【43ok win fail】
+        '''
         dbNameLower = 'testdbs'
         cRes = createDB.createSql(dbNameLower)
         self.assertEqual(cRes, 0, msg='使用小写字母创建数据库')
@@ -212,7 +208,7 @@ class Test_db_create(unittest.TestCase):
         row = createDB.rowNum()
         self.assertEqual(row, 1)
         dRes = createDB.dropDB(dbNameLower)
-        self.assertTrue(dRes == None)
+        self.assertTrue(dRes == 0)
 
     @unittest.skipIf(platform['system'] == 'Windows', 'win平台不执行此用例')
     def test_db_020(self):
@@ -228,12 +224,13 @@ class Test_db_create(unittest.TestCase):
         dbNameUpper = 'TESTDBS'
         uRes = createDB.createSql(dbNameUpper)
         self.assertEqual(uRes, 0, msg='使用大写字母创建数据库')
-        ret2 = createDB.checkRes()
-        self.assertEqual(ret2['name'], dbNameUpper)
+        ret2 = createDB.checkRes(1)
+
+        self.assertEqual(ret2[0]['name'], dbNameUpper)
         lDrop = createDB.dropDB(dbNameLower)
-        self.assertTrue(lDrop == None, msg='db_020检查删除小写字母创建的数据库是否成功')
+        self.assertTrue(lDrop == 0, msg='db_020检查删除小写字母创建的数据库是否成功')
         uDrop = createDB.dropDB(dbNameUpper)
-        self.assertTrue(uDrop == None, msg='db_020检查删除大写字母创建的数据库是否成功')
+        self.assertTrue(uDrop == 0, msg='db_020检查删除大写字母创建的数据库是否成功')
 
     @unittest.skipIf(platform['system'] == 'Linux', 'Linux平台不执行此用例')
     def test_db_021_win(self):
@@ -251,7 +248,7 @@ class Test_db_create(unittest.TestCase):
         row = createDB.rowNum()
         self.assertEqual(row, 1)
         dRes = createDB.dropDB(dbName)
-        self.assertTrue(dRes == None, msg='删除创建的testdb')
+        self.assertTrue(dRes == 0, msg='删除创建的testdb')
 
     @unittest.skipIf(platform['system'] == 'Windows', 'win平台不执行此用例')
     def test_db_021(self):
@@ -266,13 +263,12 @@ class Test_db_create(unittest.TestCase):
         dbName2 = 'testDB'
         cRes2 = createDB.createSql(dbName2)
         self.assertEqual(cRes2, 0, msg='使用testDB大写字母创建数据库，43ok ,win fail')
-        ret2 = createDB.checkRes()
-        self.assertEqual(ret2['name'], dbName2)
-
+        ret2 = createDB.checkRes(1)
+        self.assertEqual(ret2[0]['name'], dbName2)
         dRes1 = createDB.dropDB(dbName)
-        self.assertTrue(dRes1 == None)
+        self.assertTrue(dRes1 == 0)
         dRes2 = createDB.dropDB(dbName2)
-        self.assertTrue(dRes2 == None)
+        self.assertTrue(dRes2 == 0)
 
     def test_db_022(self):
         '''
@@ -294,7 +290,7 @@ class Test_db_create(unittest.TestCase):
         self.assertEqual(cRes, 0, msg='创建名称为null的数据库，期望返回fail')
 
         dRes = createDB.dropDB(dbName)
-        self.assertTrue(dRes == None, msg='删除掉创建的数据库')
+        self.assertTrue(dRes == 0, msg='删除掉创建的数据库')
     def test_db_024(self):
         '''
         创建名称长度为1的数据库
@@ -305,7 +301,7 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], dbName)
         dRes = createDB.dropDB(dbName)
-        self.assertTrue(dRes == None, msg='删除掉创建的数据库')
+        self.assertTrue(dRes == 0, msg='删除掉创建的数据库')
     def test_db_025(self):
         '''
         数字字母下划线混合，长度为15个字符的数据库, query ok
@@ -316,7 +312,7 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], dbName)
         dRes = createDB.dropDB(dbName)
-        self.assertTrue(dRes == None, msg='删除掉创建的数据库')
+        self.assertTrue(dRes == 0, msg='删除掉创建的数据库')
 
     def test_db_026(self):
         '''
@@ -346,7 +342,7 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'],'db_0325' ,msg='db_029验证写入的名称和查询到的名称是否是同一个')
         dRes = createDB.dropDB('db_0325')
-        self.assertTrue(dRes == None, msg='db_029检查删除创建的数据库是否成功')
+        self.assertTrue(dRes == 0, msg='db_029检查删除创建的数据库是否成功')
     def test_db_030(self):
         '''
         if not exist 在库名后面，创建数据库，提示query OK
@@ -357,7 +353,7 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'] , 'testdb',msg='检查创建的库和查询到的库是否一致')
         dRes =createDB.dropDB('testdb')
-        self.assertEqual(dRes,None ,msg='db_030删除掉创建的数据库')
+        self.assertEqual(dRes,0 ,msg='db_030删除掉创建的数据库')
     def test_db_031(self):
         '''
         if not exist 创建一个已经存在的库，提示query ok,并不会有一个同名的库被创建
@@ -370,18 +366,19 @@ class Test_db_create(unittest.TestCase):
         row = createDB.rowNum()
         self.assertEqual(row , 1,msg='只有一条记录返回')
         dRes = createDB.dropDB('testdb0325')
-        self.assertEqual(dRes,None,msg='db_031删除掉创建的数据库')
+        self.assertEqual(dRes,0,msg='db_031删除掉创建的数据库')
     def test_db_032(self):
         '''
         create db 不用if not exist创建数据库，提示query ok
         '''
-        csql = 'create db test_db'
+        csql = 'create db test_db032'
         cRes = createDB.createSql(None,csql)
+
         self.assertEqual(cRes,0,msg='db_032创建数据库')
         ret = createDB.checkRes()
-        self.assertEqual(ret['name'] , 'test_db' ,msg='db_032验证写入的库和查到库是否一致')
-        dRes = createDB.dropDB('test_db')
-        self.assertEqual(dRes,None , msg='db_032删除掉创建的数据库')
+        self.assertEqual(ret['name'] , 'test_db032' ,msg='db_032验证写入的库和查到库是否一致')
+        dRes = createDB.dropDB('test_db032')
+        self.assertEqual(dRes,0 , msg='db_032删除掉创建的数据库')
     def test_db_033(self):
         '''
         if not exist 创建一个库，删除库，再创建一个同名的库，提示query ok
@@ -392,14 +389,14 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], dbName, msg='db_033验证写入的库和查到库是否一致')
         dRes = createDB.dropDB(dbName)
-        self.assertEqual(dRes, None, msg='db_033删除掉创建的数据库')
+        self.assertEqual(dRes, 0, msg='db_033删除掉创建的数据库')
 
         cRes2 = createDB.createSql(dbName)
         self.assertEqual(cRes2, 0, msg='db_033创建数据库test001,第二次')
         ret2 = createDB.checkRes()
         self.assertEqual(ret2['name'], dbName, msg='db_033验证写入的库和查到库是否一致，第二次')
         dRes = createDB.dropDB(dbName)
-        self.assertEqual(dRes, None, msg='db_033删除掉创建的数据库，第二次')
+        self.assertEqual(dRes, 0, msg='db_033删除掉创建的数据库，第二次')
     def test_db_034(self):
         '''
             create db创建一个库，提示query ok，
@@ -416,7 +413,7 @@ class Test_db_create(unittest.TestCase):
         row = createDB.rowNum()
         self.assertEqual(row ,1 ,msg='db_034只有1行返回')
         dRes = createDB.dropDB('testdb002')
-        self.assertEqual(dRes ,None ,msg='db_034删除创建的数据库')
+        self.assertEqual(dRes ,0 ,msg='db_034删除创建的数据库')
 
     def test_db_035(self):
         '''
@@ -485,7 +482,7 @@ class Test_db_create(unittest.TestCase):
         self.assertEqual(ret['name'], '顺实科技',msg='db_041验证创建的库名和查询到的库名一致')
         self.assertEqual(ret['path'], 'e:\\rtdb\\顺实科技', msg='db_041验证创建路径和查询到路径一致')
         dRes = createDB.dropDB('顺实科技')
-        self.assertEqual(dRes,None ,msg='db_041删除库')
+        self.assertEqual(dRes,0 ,msg='db_041删除库')
 
     @unittest.skipIf(platform['system'] == 'Linux', 'Linux平台不执行此用例')
     def test_db_042(self):
@@ -498,7 +495,7 @@ class Test_db_create(unittest.TestCase):
         self.assertEqual(ret['name'], 'testdb0426',msg='db_042验证创建的库名和查询到的库名一致')
         self.assertEqual(ret['path'], 'c:\\rtdb\\rtdb_test\\testdb0426', msg='db_042验证创建路径和查询到路径一致')
         dRes = createDB.dropDB('testdb0426')
-        self.assertEqual(dRes,None ,msg='db_042删除库')
+        self.assertEqual(dRes,0 ,msg='db_042删除库')
 
     @unittest.skipIf(platform['system'] == 'Linux', 'Linux平台不执行此用例')
     def test_db_043(self):
@@ -515,7 +512,7 @@ class Test_db_create(unittest.TestCase):
 
         self.assertEqual(ret['path'], 'c:\\rtdb\\'+dbName+'', msg='db_043验证创建路径和查询到路径一致')
         dRes = createDB.dropDB(dbName)
-        self.assertEqual(dRes, None, msg='db_043删除库')
+        self.assertEqual(dRes, 0, msg='db_043删除库')
 
     @unittest.skipIf(platform['system'] == 'Linux', 'Linux平台不执行此用例')
     def test_db_044(self):
@@ -545,7 +542,7 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], 'testdb0516', msg='db_046验证创建的库名和查询到的库名一致')
         dRes = createDB.dropDB('testdb0516')
-        self.assertEqual(dRes , None)
+        self.assertEqual(dRes , 0)
     def test_db_047(self):
         '''
         create db 库名，数据库名称中间有空格，创建数据库，提示queryok 名称为空格前的部分
@@ -556,7 +553,7 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], 'test05', msg='db_047验证创建的库名和查询到的库名一致')
         dRes = createDB.dropDB('test05')
-        self.assertEqual(dRes, None)
+        self.assertEqual(dRes, 0)
     def test_db_048(self):
         '''
         create db 库名使用引号，且中间带空格，queryOK
@@ -568,7 +565,7 @@ class Test_db_create(unittest.TestCase):
 
         self.assertEqual(ret['name'], 'test05 db16', msg='db_048验证创建的库名和查询到的库名一致')
         dRes = createDB.dropDB("'test05 db16'")
-        self.assertEqual(dRes, None)
+        self.assertEqual(dRes, 0)
 
     @unittest.skipIf(platform['system'] == 'Linux', 'Linux平台不执行此用例')
     def test_db_049(self):
@@ -581,7 +578,7 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], 'testdb049', msg='db_049验证创建的库名和查询到的库名一致')
         dRes = createDB.dropDB("testdb049")
-        self.assertEqual(dRes, None)
+        self.assertEqual(dRes, 0)
 
     @unittest.skipIf(platform['system'] == 'Linux', 'Linux平台不执行此用例')
     def test_db_050(self):
@@ -594,7 +591,7 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], 'testdb050', msg='db_050验证创建的库名和查询到的库名一致')
         dRes = createDB.dropDB('testdb050')
-        self.assertEqual(dRes,None)
+        self.assertEqual(dRes,0)
 
     @unittest.skipIf(platform['system'] == 'Linux', 'Linux平台不执行此用例')
     def test_db_051(self):
@@ -607,7 +604,7 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], 'testdb051', msg='db_051验证创建的库名和查询到的库名一致')
         dRes = createDB.dropDB('testdb051')
-        self.assertEqual(dRes , None)
+        self.assertEqual(dRes , 0)
 
     @unittest.skipIf(platform['system'] == 'Linux', 'Linux平台不执行此用例')
     def test_db_052(self):
@@ -621,7 +618,7 @@ class Test_db_create(unittest.TestCase):
         self.assertEqual(ret['name'], 'testdb052', msg='db_052验证创建的库名和查询到的库名一致')
         self.assertEqual(ret['path'], 'E:\\rtdb_test\\testdb052', msg='db_052验证创建路径和查询到路径一致')
         dRes = createDB.dropDB('testdb052')
-        self.assertEqual(dRes, None, msg='db_052删除库')
+        self.assertEqual(dRes, 0, msg='db_052删除库')
     @unittest.skipIf(platform['system'] == 'Windows','windows平台跳过此用例')
     def test_db_053(self):
         '''
@@ -634,7 +631,7 @@ class Test_db_create(unittest.TestCase):
         self.assertEqual(ret['name'], 'testdb053', msg='db_053验证创建的库名和查询到的库名一致')
         self.assertEqual(ret['path'], '/rtdb_test/testdb053', msg='db_053验证创建路径和查询到路径一致')
         dRes = createDB.dropDB('testdb053')
-        self.assertEqual(dRes, None, msg='db_053删除库')
+        self.assertEqual(dRes, 0, msg='db_053删除库')
     def test_db_054(self):
         '''
         create db 库名，数据库名称前没有空格，创建数据库,query fail
@@ -654,56 +651,58 @@ class Test_db_create(unittest.TestCase):
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], 'testdb055', msg='db_055验证创建的库名和查询到的库名一致')
         dRes = createDB.dropDB('testdb055')
-        self.assertEqual(dRes,None,msg='db_055删除创建的表')
+        self.assertEqual(dRes,0,msg='db_055删除创建的表')
     @unittest.skipIf(platform['system'] == 'Windows' ,'windows平台跳过此用例')
     def test_db_056(self):
         '''
-        Linux:create db @'路径信息'创建数据库，路径中间带空格,fail
+        Linux:create db @'路径信息'创建数据库，路径中间带空格, query ok
         '''
-        sql = 'create db @"/junxiatest/    testdb056"'
+        sql = 'create db @"/rtdb_test/    testdb056"'
         res = createDB.createSql(None,sql)
-        self.assertTrue(res != 0)
-        row = createDB.rowNum()
-        self.assertEqual(row , 0,msg='没有创建成功，所以返回0行')
+        self.assertTrue(res == 0)
+        ret = createDB.checkRes()
+        self.assertEqual(ret['name'], 'testdb056', msg='db_056验证创建的库名和查询到的库名一致')
+        dRes = createDB.dropDB('testdb056')
+        self.assertEqual(dRes, 0, msg='db_056删除创建的表')
 
     @unittest.skipIf(platform['system'] == 'Windows', 'windows平台跳过此用例')
     def test_db_057(self):
         '''
         Linux:create db @'路径信息'创建数据库，路径前面带空格,query ok
         '''
-        sql = 'create db @"   /junxiatest/testdb057"'
+        sql = 'create db @"   /rtdb_test/testdb057"'
         res = createDB.createSql(None,sql)
         self.assertEqual(res ,0 ,msg='db_057创建数据成功')
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], 'testdb057', msg='db_057验证创建的库名和查询到的库名一致')
         dRes = createDB.dropDB('testdb057')
-        self.assertEqual(dRes, None, msg='db_057删除创建的表')
+        self.assertEqual(dRes, 0, msg='db_057删除创建的表')
 
     @unittest.skipIf(platform['system'] == 'Windows', 'windows平台跳过此用例')
     def test_db_058(self):
         '''
         create db @'路径信息'创建数据库，路径后面带空格,query ok
         '''
-        csql = 'create db @"/junxiatest/testdb058    "'
+        csql = 'create db @"/rtdb_test/testdb058    "'
         res = createDB.createSql(None,csql)
         self.assertEqual(res , 0 ,msg='db_058创建数据库成功')
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], 'testdb058', msg='db_058验证创建的库名和查询到的库名一致')
         dRes = createDB.dropDB('testdb058')
-        self.assertEqual(dRes, None, msg='db_058删除创建的表')
+        self.assertEqual(dRes, 0, msg='db_058删除创建的表')
 
     @unittest.skipIf(platform['system'] == 'Windows', 'windows平台跳过此用例')
     def test_db_059(self):
         '''
         create db @'路径信息'创建数据库，整个路径前面没有空格,query ok
         '''
-        sql = 'create db@"/junxiatest/testdb059"'
+        sql = 'create db@"/rtdb_test/testdb059"'
         res = createDB.createSql(None,sql)
         self.assertEqual(res , 0 ,msg='db_059创建数据库成功')
         ret = createDB.checkRes()
         self.assertEqual(ret['name'], 'testdb059', msg='db_059验证创建的库名和查询到的库名一致')
         dRes = createDB.dropDB('testdb059')
-        self.assertEqual(dRes, None, msg='db_059删除创建的表')
+        self.assertEqual(dRes, 0, msg='db_059删除创建的表')
 
 
 

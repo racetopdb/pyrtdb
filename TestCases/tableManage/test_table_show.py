@@ -1,8 +1,33 @@
+# -*- coding: utf-8 -*-
+from TestCases.tableManage.setupModule import *
 import unittest
-from TestCases.tableManage.setupClass import *
+from Comm.pyrtdb import conn
+from time import *
+import datetime
+from Conf.config import *
 from Lib.tableOpt import *
 
-class Test_tb_show(setupTb):
+db = 'test_tb_show' + datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+
+class Test_tb_show(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        res = createDB.createSql(db)
+        cls().assertEqual(res, 0, msg='初始化创建数据库')
+        usql = 'use ' + db + ''
+        use = createDB.createSql(None, usql)
+        cls().assertEqual(use, 0, msg='初始化use数据库')
+
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        '''
+        show的类清除
+        '''
+
+        dropDb = createDB.dropDB(db)
+        cls().assertEqual(dropDb, 0, msg='删除初始化创建的数据库')
+
 
     def test_tb_001(self):
         '''
@@ -24,7 +49,7 @@ class Test_tb_show(setupTb):
             self.assertEqual(3, field, msg='验证字段数量')
             self.assertEqual(0, row, msg='验证行数')
         drop = tableOpt.dropTb('test_001')
-        self.assertEqual(drop , None ,msg='删除创建的表')
+        self.assertEqual(drop , 0 ,msg='删除创建的表')
     def test_tb_002(self):
         '''
         show tables
@@ -46,7 +71,7 @@ class Test_tb_show(setupTb):
             self.assertEqual(4, field, msg='验证字段数量')
             self.assertEqual(0, row, msg='验证行数')
         drop = tableOpt.dropTb('test_002')
-        self.assertEqual(drop , None ,msg='删除创建的表')
+        self.assertEqual(drop , 0 ,msg='删除创建的表')
     def test_tb_003(self):
         '''
         show tb
@@ -68,4 +93,4 @@ class Test_tb_show(setupTb):
             self.assertEqual(4, field, msg='验证字段数量')
             self.assertEqual(0, row, msg='验证行数')
         drop = tableOpt.dropTb('test_003')
-        self.assertEqual(drop , None ,msg='删除创建的表')
+        self.assertEqual(drop , 0 ,msg='删除创建的表')

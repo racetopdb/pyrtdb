@@ -42,14 +42,13 @@
 
 
 > 目前rtdb包尚未上传到PyPI(Python官方第三方包索引)，所以无需通过PyPI进行下载安装。目前支持的用户使用方式是将rtdbcli的包路径配置到系统路径之后，可见如下示例
-(代码示例位于{ProjectDirPath}/pyrtdb/examples/demo.py)。
+(代码示例位于{ProjectDirPath}/pyrtdb/examples/simple_example.py)。
 
 ```Python
 import sys
 from pathlib import Path
 
-# 必须确保{ProjectDir}/rtdbcli的路径已经配置到系统路径，否则会抛出异常ModuleNotFoundError
-
+# 必须确保{ProjectDirPath}/rtdbcli的路径已经配置到系统路径，否则会抛出异常ModuleNotFoundError
 try:
     import pyrtdb
 except ModuleNotFoundError:
@@ -58,46 +57,21 @@ except ModuleNotFoundError:
     sys.path.append(str(Path.cwd().parent))
     import pyrtdb
 
-pool = pyrtdb.NewPool(pyrtdb.RTDB_HOST, pyrtdb.RTDB_PORT,
-                    pyrtdb.RTDB_USER_NAME, pyrtdb.RTDB_PASSWORD, charset=pyrtdb.CHARSET_UTF8)
+DB = pyrtdb.connect(pyrtdb.RTDB_HOST, pyrtdb.RTDB_PORT,
+                     pyrtdb.RTDB_USER_NAME, pyrtdb.RTDB_PASSWORD)
 
-def test_rtdb():
-    db = pool.newDB()
-    conn = db.newConn()
-    if not conn:
-        return
-	# conn.query("drop db 'test_db';")
-    r = conn.query("create database 'test_db' if not exists;")
-    if 0 != r :
-        return
-    r = conn.query("use test_db;")
-    if 0 != r:
-        return
-
-    r = conn.query("create table if not exists users(id int, email varchar(254), password varchar(254));")
-    if 0 != r:
-        return
-
-    r = conn.query("insert into users(id, email, password) values(1, 'uzi@sina.com', '123456');")
-    if 0 != r:
-        return
-    r = conn.query("insert into users(id, email, password) values(2, 'uzi2@sina.com', '223456');")
-    if 0 != r:
-        return
-    r = conn.query("insert into users(id, email, password) values(3, 'uzi3@sina.com', '323456');")
-    if 0 != r:
-        return
-
-    reader = conn.query_reader("select * from users where time between '2020-01-02 00:00:00.000' and '2023-01-02 23:59:59.000';")
-    if not reader:
-        return
-    while 0 == reader.cursor_next():
-        id = reader.get_int(1)
-        email = reader.get_string(2)
-        password = reader.get_string(3)
-        print("one row data",id,email,password)
-
-test_rtdb()
+with DB:
+    with DB.cursor() as cursor:
+        cursor.execute("create database test_db if not exists;")
+        cursor.execute("use test_db;")
+        cursor.execute(
+            "create table users if not exists users(id bigint, email varchar(255), password varchar(255));")
+    with DB.cursor() as cursor:
+        sql = "select last * from users;"
+        cursor.execute(sql)
+        # 获取一条记录
+        result = cursor.fetchone()
+        print(result)
 ```
 
 
